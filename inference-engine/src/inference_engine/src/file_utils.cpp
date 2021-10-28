@@ -20,7 +20,7 @@
 #    include <dlfcn.h>
 #    include <limits.h>
 #    include <unistd.h>
-#    ifdef ENABLE_UNICODE_PATH_SUPPORT
+#    ifdef OPENVINO_ENABLE_UNICODE_PATH_SUPPORT
 #        include <codecvt>
 #        include <locale>
 #    endif
@@ -67,7 +67,7 @@
 #endif
 
 long long FileUtils::fileSize(const char* charfilepath) {
-#if defined(ENABLE_UNICODE_PATH_SUPPORT) && defined(_WIN32)
+#if defined(OPENVINO_ENABLE_UNICODE_PATH_SUPPORT) && defined(_WIN32)
     std::wstring widefilename = ov::util::string_to_wstring(charfilepath);
     const wchar_t* fileName = widefilename.c_str();
 #elif defined(__ANDROID__) || defined(ANDROID)
@@ -148,7 +148,7 @@ static std::string getIELibraryPathA() {
     GetModuleFileNameA(hm, (LPSTR)ie_library_path, sizeof(ie_library_path));
     return getPathName(std::string(ie_library_path));
 #elif defined(__APPLE__) || defined(__linux__)
-#    ifdef USE_STATIC_IE
+#    if defined(OPENVINO_STATIC_LIBRARY) || defined(USE_STATIC_IE)
 #        ifdef __APPLE__
     Dl_info info;
     dladdr(reinterpret_cast<void*>(getIELibraryPath), &info);
@@ -163,13 +163,13 @@ static std::string getIELibraryPathA() {
     Dl_info info;
     dladdr(reinterpret_cast<void*>(getIELibraryPath), &info);
     return getPathName(std::string(info.dli_fname)).c_str();
-#    endif  // USE_STATIC_IE
+#    endif  // OPENVINO_STATIC_LIBRARY || USE_STATIC_IE
 #else
 #    error "Unsupported OS"
 #endif  // _WIN32
 }
 
-#ifdef ENABLE_UNICODE_PATH_SUPPORT
+#ifdef OPENVINO_ENABLE_UNICODE_PATH_SUPPORT
 
 std::wstring getIELibraryPathW() {
 #    ifdef _WIN32
@@ -189,10 +189,10 @@ std::wstring getIELibraryPathW() {
 #    endif
 }
 
-#endif  // ENABLE_UNICODE_PATH_SUPPORT
+#endif  // OPENVINO_ENABLE_UNICODE_PATH_SUPPORT
 
 std::string getIELibraryPath() {
-#ifdef ENABLE_UNICODE_PATH_SUPPORT
+#ifdef OPENVINO_ENABLE_UNICODE_PATH_SUPPORT
     return ov::util::wstring_to_string(getIELibraryPathW());
 #else
     return getIELibraryPathA();

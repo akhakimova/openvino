@@ -14,14 +14,8 @@
 using namespace std;
 using namespace ngraph;
 
-OPENVINO_RTTI_DEFINITION(op::v1::DeformableConvolution,
-                         "DeformableConvolution",
-                         1,
-                         op::util::DeformableConvolutionBase);
-OPENVINO_RTTI_DEFINITION(op::v8::DeformableConvolution,
-                         "DeformableConvolution",
-                         8,
-                         op::util::DeformableConvolutionBase);
+BWDCMP_RTTI_DEFINITION(op::v1::DeformableConvolution);
+BWDCMP_RTTI_DEFINITION(op::v8::DeformableConvolution);
 
 op::v8::DeformableConvolution::DeformableConvolution(const Output<Node>& arg,
                                                      const Output<Node>& offsets,
@@ -183,6 +177,7 @@ std::shared_ptr<Node> op::v8::DeformableConvolution::clone_with_new_inputs(const
 }
 
 namespace deformable_convolution {
+namespace {
 template <element::Type_t ET>
 inline bool evaluate(const HostTensorVector& inputs,
                      const HostTensorPtr& out,
@@ -300,6 +295,7 @@ bool evaluate_deformable_convolution(const HostTensorVector& inputs,
     }
     return rc;
 }
+}  // namespace
 }  // namespace deformable_convolution
 
 bool op::v8::DeformableConvolution::evaluate(const HostTensorVector& outputs, const HostTensorVector& inputs) const {
